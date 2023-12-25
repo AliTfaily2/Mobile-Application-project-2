@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
+import 'signin.dart';
+import 'register.dart';
+
 void main()=> runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -9,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'CSCI410 Project 2',
-      home: Home(),
+      home: Register(),
       debugShowCheckedModeBanner: false,
     );
   }
