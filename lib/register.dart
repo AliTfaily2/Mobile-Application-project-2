@@ -13,10 +13,10 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  TextEditingController _username = TextEditingController();
-  TextEditingController _email = TextEditingController();
-  TextEditingController _password = TextEditingController();
-  TextEditingController _cpassword = TextEditingController();
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _cpassword = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _loading = false;
 
@@ -25,6 +25,15 @@ class _RegisterState extends State<Register> {
     setState(() {
       _loading = false;
     });
+  }
+
+  @override
+  void dispose(){
+    _username.dispose();
+    _email.dispose();
+    _password.dispose();
+    _cpassword.dispose();
+    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -150,7 +159,7 @@ class _RegisterState extends State<Register> {
                         setState(() {
                           _loading = true;
                         });
-                        RegisterUser(confirm,_username.text.toString(),_email.text.toString(),_password.text.toString());
+                        registerUser(confirm,_username.text.toString(),_email.text.toString(),_password.text.toString());
                       }
                     },
                     child: const Text(
@@ -164,7 +173,7 @@ class _RegisterState extends State<Register> {
         )));
   }
 }
-void RegisterUser(Function(String text) confirm, String username, String email, String password) async{
+void registerUser(Function(String text) confirm, String username, String email, String password) async{
   try{
     final response = await http
         .post(Uri.parse('$_baseURL/mobile/Register.php'),
@@ -182,6 +191,5 @@ void RegisterUser(Function(String text) confirm, String username, String email, 
     }
   }catch(e){
     confirm('connection error');
-    print(e);
   }
 }
