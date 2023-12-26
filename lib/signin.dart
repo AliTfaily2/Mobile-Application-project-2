@@ -54,7 +54,7 @@ class _SignInState extends State<SignIn> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     checkSavedData();
   }
@@ -75,10 +75,19 @@ class _SignInState extends State<SignIn> {
           title: const Text(
             'Sign In Page',
             style: TextStyle(
-                fontSize: 24, color: Colors.green, fontWeight: FontWeight.bold),
+              fontSize: 24,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           centerTitle: true,
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.green[900],
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(20),
+            ),
+          ),
+          elevation: 10, // Add a subtle shadow
         ),
         body: SingleChildScrollView(
             child: Form(
@@ -148,9 +157,9 @@ class _SignInState extends State<SignIn> {
                             _email.text.toString(), _password.text.toString());
                       }
                     },
-                    child: const Text(
+                    child:  Text(
                       'Sign in',
-                      style: TextStyle(fontSize: 24, color: Colors.green),
+                      style: TextStyle(fontSize: 24, color: Colors.green[900]),
                     )),
                 const SizedBox(
                   height: 20,
@@ -160,15 +169,23 @@ class _SignInState extends State<SignIn> {
                   child: const CircularProgressIndicator(),
                 ),
                 GestureDetector(
-                    onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => const Register())
-                        );
-                    },
-                    child: const Text('Don\'t have an account? Register now!',
-                        style: TextStyle(
-                          color: Colors.black, // Text color
-                        ))),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const Register()));
+                  },
+                  child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Don\'t have an account?',
+                            style: TextStyle(
+                              color: Colors.black,
+                            )),
+                        Text(
+                          ' Register now!',
+                          style: TextStyle(color: Colors.green),
+                        )
+                      ]),
+                )
               ],
             ),
           ),

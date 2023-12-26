@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'dart:async';
 import 'dart:math';
 import 'score.dart';
+
+const String _baseURL = 'http://alitfaily.000webhostapp.com';
+EncryptedSharedPreferences _encryptedData = EncryptedSharedPreferences();
 
 class MyQuiz extends StatefulWidget {
   final String operation;
@@ -12,6 +18,7 @@ class MyQuiz extends StatefulWidget {
 }
 
 class _MyQuizState extends State<MyQuiz> {
+
   Random random = Random();
   double num1 = 0, num2 = 0, correctAnswer = 0;
   List<double> options = [];
@@ -31,6 +38,9 @@ class _MyQuizState extends State<MyQuiz> {
     super.initState();
     startTimer();
     generateQuestion();
+  }
+  void saveRecords(String text){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
   void startTimer(){
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -57,6 +67,7 @@ class _MyQuizState extends State<MyQuiz> {
     resetTimer();
     timer.cancel();
     if(count == 10){
+      dataInsertion(saveRecords, header,'1', timeTook.toString());
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context)=> const ShowScore(),
         settings: RouteSettings(arguments: ScoreArgument(timeTook,lifeCounter)))
@@ -73,6 +84,7 @@ class _MyQuizState extends State<MyQuiz> {
     }
     if(lifeCounter == 0){
       hearts= '💔💔💔';
+      dataInsertion(saveRecords, header,'0', timeTook.toString());
       timer.cancel();
       showRestartDialog();
       return;
@@ -166,13 +178,13 @@ class _MyQuizState extends State<MyQuiz> {
             });
             Navigator.of(context).pop();
           }, style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-              child: const Text('Restart')),
+              child: const Text('Restart',style: TextStyle(color:Colors.white),)),
           ElevatedButton(
             onPressed: (){
               Navigator.of(context).pop();
               Navigator.of(context).pop();
             }, style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-            child: const Text('Go Home'),
+            child: const Text('Go Home',style: TextStyle(color:Colors.white)),
           ),
         ],
       );
@@ -183,9 +195,15 @@ class _MyQuizState extends State<MyQuiz> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('MyQuiz - $header'),
+        title: Text('MyQuiz - $header', style: const TextStyle(color: Colors.white),),
         centerTitle: true,
         backgroundColor: colors,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+        ),
+        elevation: 10,
       ),
       body: Center(
         child: Column(
@@ -231,8 +249,8 @@ class _MyQuizState extends State<MyQuiz> {
                   timer.cancel();
                   checkAnswer(options[0]);
                 },
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                  child: Text(options[0].toStringAsFixed(x), style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w300),),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.black,  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0),),),
+                  child: Text(options[0].toStringAsFixed(x), style: const TextStyle(fontSize: 50, fontWeight: FontWeight.w300,color:Colors.white),),
                     )
                 ),
                 SizedBox(height: 100,width: 120,
@@ -240,8 +258,8 @@ class _MyQuizState extends State<MyQuiz> {
                       timer.cancel();
                       checkAnswer(options[1]);
                     },
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                      child: Text(options[1].toStringAsFixed(x), style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w300)),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0),),),
+                      child: Text(options[1].toStringAsFixed(x), style: const TextStyle(fontSize: 50, fontWeight: FontWeight.w300,color:Colors.white)),
                     )
                 ),
               ],
@@ -255,8 +273,8 @@ class _MyQuizState extends State<MyQuiz> {
                       timer.cancel();
                       checkAnswer(options[2]);
                     },
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                      child: Text(options[2].toStringAsFixed(x), style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w300)),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0),),),
+                      child: Text(options[2].toStringAsFixed(x), style: const TextStyle(fontSize: 50, fontWeight: FontWeight.w300,color:Colors.white)),
                     )
                 ),
                 SizedBox(height: 100,width: 120,
@@ -264,8 +282,8 @@ class _MyQuizState extends State<MyQuiz> {
                       timer.cancel();
                       checkAnswer(options[3]);
                     },
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                      child: Text(options[3].toStringAsFixed(x), style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w300)),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0),),),
+                      child: Text(options[3].toStringAsFixed(x), style: const TextStyle(fontSize: 50, fontWeight: FontWeight.w300,color:Colors.white)),
                     )
                 ),
               ],
@@ -274,5 +292,28 @@ class _MyQuizState extends State<MyQuiz> {
         ),
       ),
     );
+  }
+}
+
+void dataInsertion(Function(String text) saveRecords, String operation, String result,String tt) async{
+  try{
+    String userID = await _encryptedData.getString('myKey');
+    final response = await http.post(
+        Uri.parse('$_baseURL/mobile/dataInsertion.php'),
+        headers: <String, String>{
+          'Content-Type' : 'application/json; charset=UTF-8',
+        },
+        body: convert.jsonEncode(<String, String>{
+          'uid': userID,
+          'operation': operation,
+          'result': result,
+          'timetook': tt
+        }))
+        .timeout(const Duration(seconds: 5));
+    if (response.statusCode == 200) {
+      saveRecords(response.body);
+    }
+  }catch(e){
+    saveRecords('connection error');
   }
 }

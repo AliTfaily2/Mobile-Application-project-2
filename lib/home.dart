@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'signin.dart';
 import 'quiz.dart';
-
+import 'stats.dart';
 
 
 class Home extends StatefulWidget {
@@ -32,14 +32,25 @@ class _HomeState extends State<Home> {
             SizedBox(height: h*0.02,),
             const OperationButtons(operation: '/', image: 'assets/division.png', text: 'DIVIDE'),
             SizedBox(height: h*0.02,),
-            IconButton(onPressed: () {
-              _encryptedData.remove('myKey').then((success) {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const SignIn())
-                );
-              });
-            }, icon: const Icon(Icons.logout,size: 40,)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(onPressed: (){
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context)=> const Stats())
+                  );
+                }, icon: const Icon(Icons.insert_chart,size: 50,color: Colors.black)),
+                IconButton(onPressed: () {
+                  _encryptedData.remove('myKey').then((success) {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => const SignIn())
+                    );
+                  });
+                }, icon: const Icon(Icons.logout,size: 40,color: Colors.black,)),
+              ],
+            ),
+
             SizedBox(height: h * 0.06,),
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -44,10 +44,20 @@ class _RegisterState extends State<Register> {
         appBar: AppBar(
           title: const Text(
             'Register Page',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 24,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           centerTitle: true,
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.green[900],
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(20),
+            ),
+          ),
+          elevation: 10,
         ),
         body: SingleChildScrollView(
             child: Center(
@@ -163,9 +173,9 @@ class _RegisterState extends State<Register> {
                         registerUser(confirm,_username.text.toString(),_email.text.toString(),_password.text.toString());
                       }
                     },
-                    child: const Text(
+                    child: Text(
                       'Register',
-                      style: TextStyle(fontSize: 24, color: Colors.green),
+                      style: TextStyle(fontSize: 24, color: Colors.green[900]),
                     )),
                 Visibility(visible: _loading, child: const CircularProgressIndicator(),)
               ],
