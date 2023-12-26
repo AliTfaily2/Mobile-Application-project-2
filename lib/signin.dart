@@ -25,6 +25,7 @@ class _SignInState extends State<SignIn> {
 
   void loginconfirm(bool success) {
     if (success) {
+      Navigator.of(context).pop();
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => const Home()));
       ScaffoldMessenger.of(context)
@@ -45,17 +46,19 @@ class _SignInState extends State<SignIn> {
   void checkSavedData() async {
     _encryptedData.getString('myKey').then((String myKey) {
       if (myKey.isNotEmpty) {
+        Navigator.of(context).pop();
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => const Home()));
       }
     });
   }
 
-  /*@override
+  @override
   void initState(){
     super.initState();
     checkSavedData();
-  }*/
+  }
+
   @override
   void dispose() {
     _email.dispose();

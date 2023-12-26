@@ -18,6 +18,7 @@ class _RegisterState extends State<Register> {
   final TextEditingController _password = TextEditingController();
   final TextEditingController _cpassword = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   bool _loading = false;
 
   void confirm(String text){
@@ -91,7 +92,7 @@ class _RegisterState extends State<Register> {
                       if (value == null || value.isEmpty) {
                         return 'Please Enter email';
                       } else if (!RegExp(
-                              r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+                              r'\b[A-Za-z0-9._]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
                           .hasMatch(value)) {
                         return 'Please enter a valid Email';
                       } else {
@@ -175,10 +176,10 @@ class _RegisterState extends State<Register> {
 }
 void registerUser(Function(String text) confirm, String username, String email, String password) async{
   try{
-    final response = await http
-        .post(Uri.parse('$_baseURL/mobile/Register.php'),
+    final response = await http.post(
+        Uri.parse('$_baseURL/mobile/Register.php'),
             headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
+              'Content-Type' : 'application/json; charset=UTF-8',
             },
             body: convert.jsonEncode(<String, String>{
               'usr': username,
