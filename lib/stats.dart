@@ -15,6 +15,11 @@ List<String> filters = [
   'Division'
 ];
 
+List<BarChartGroupData> barGraphList = [];
+
+
+
+
 class Stats extends StatefulWidget {
   const Stats({super.key});
 
@@ -28,6 +33,8 @@ class _StatsState extends State<Stats> {
   double loses = 0;
   bool _loadPage= false;
   bool _loadChart = false;
+  bool _loadbargraph = false;
+
   void saveData(double w, double l) {
     setState(() {
       wins = w;
@@ -36,10 +43,19 @@ class _StatsState extends State<Stats> {
       _loadChart = true;
     });
   }
+  void displayStatus(String text){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+  }
+  void update(bool success){
+    setState(() {
+      _loadbargraph = true;
+    });
+  }
 
   @override
   void initState() {
-    pieChartData(saveData, filter);
+    pieChartData(displayStatus,saveData, filter);
+    barGraphData(displayStatus, update);
     super.initState();
   }
 
@@ -82,7 +98,7 @@ class _StatsState extends State<Stats> {
                 setState(() {
                   filter = text as String;
                   _loadChart = false;
-                  pieChartData(saveData, text);
+                  pieChartData(displayStatus,saveData, text);
                 });
               },
             ),
@@ -90,7 +106,7 @@ class _StatsState extends State<Stats> {
               height: 20,
             ),
             const Text(
-              'WIN/LOSS Chart:',
+              'WIN/LOSS:',
               style: TextStyle(fontSize: 24),
             ),
             !_loadChart?const Center(child: SizedBox(width: 120,height: 120,child: CircularProgressIndicator(),),):
@@ -111,7 +127,7 @@ class _StatsState extends State<Stats> {
                     )
                   ],
                 ),
-                Container(
+                SizedBox(
                   width: 250,
                   height: 300,
                   child: PieChart(
@@ -135,14 +151,85 @@ class _StatsState extends State<Stats> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 10,),
+            const Text(
+              'GAMES/DAY:',
+              style: TextStyle(fontSize: 24),
+            ),
+            !_loadbargraph?const Center(child: SizedBox(width: 120,height: 120,child: CircularProgressIndicator(),),):
+            SizedBox(
+              width: 300,
+              height: 300,
+              child: BarChart(
+                BarChartData(
+                    titlesData: FlTitlesData(
+                      show: true,
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 30,
+                          interval: 3,
+                          getTitlesWidget: (value,meta){
+                            String text = '';
+                            switch(value.toInt()){
+                              case 1:
+                                text = 'Sun';
+                                break;
+                              case 2:
+                                text = 'Mon';
+                                break;
+                              case 3:
+                                text = 'Tue';
+                                break;
+                              case 4:
+                                text = 'Wed';
+                                break;
+                              case 5:
+                                text = 'Thu';
+                                break;
+                              case 6:
+                                text = 'Fri';
+                                break;
+                              case 7:
+                                text = 'Sat';
+                                break;
+                            }
+                            return Text(text);
+                          },
+                        )
+                      )
+                    ),
+                    borderData: FlBorderData(
+                    border:  const Border(
+                      top: BorderSide.none,
+                      right: BorderSide.none,
+                      left: BorderSide(width: 1),
+                      bottom: BorderSide(width: 1)
+                    )
+                  ),
+                  groupsSpace: 10,
+
+                  barGroups: [
+
+                    barGraphList[0],
+                    barGraphList[1],
+                    barGraphList[2],
+                    barGraphList[3],
+                    barGraphList[4],
+                    barGraphList[5],
+                    barGraphList[6]
+                  ]
+                ),
+
+              )
             )
           ]),
         )));
   }
 }
 
-void pieChartData(
-    Function(double wins, double loses) saveData, String operation) async {
+void pieChartData(Function(String message) displayStatus, Function(double wins, double loses) saveData, String operation) async {
   try {
     String userID = await _encryptedData.getString('myKey');
     final response = await http
@@ -158,5 +245,57 @@ void pieChartData(
       var row = jsonResponse[0];
       saveData(double.parse(row['wins']), double.parse(row['loses']));
     }
-  } catch (e) {}
+  } catch (e) {
+    displayStatus('Error retrieving data');
+  }
+}
+void barGraphData(Function(String message) displayStatus, Function(bool success) update)async{
+  try{
+    String userID = await _encryptedData.getString('myKey');
+    final response = await http
+        .post(Uri.parse('$_baseURL/mobile/barGraph.php'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+        body: convert.jsonEncode(
+            <String, String>{'uid': userID}))
+        .timeout(const Duration(seconds: 5));
+    if (response.statusCode == 200) {
+
+      final jsonResponse = convert.jsonDecode(response.body);
+      barGraphList.clear();
+      for(var row in jsonResponse){
+        int x = int.parse(row['dayOfWeek']);
+        double y = double.parse(row['numberOfGames']);
+        barGraphList.add(BarChartGroupData(
+            x: x ,
+            barRods: [
+              BarChartRodData(
+                  borderRadius: BorderRadius.zero,
+                  toY: y, width: 20
+              )
+            ]
+        )
+        );
+      }
+      if(barGraphList.length < 7){
+        for(var i = barGraphList.length; i< 7; i++){
+          barGraphList.add(BarChartGroupData(
+              x: 0 ,
+              barRods: [
+                BarChartRodData(
+                    borderRadius: BorderRadius.zero,
+                    toY: 0, width: 20
+                )
+              ]
+          ));
+        }
+      }
+      update(true);
+    }
+
+  }catch(e){
+    update(false);
+    displayStatus('Error retrieving data');
+  }
 }
