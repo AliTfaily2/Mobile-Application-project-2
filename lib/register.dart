@@ -26,6 +26,7 @@ class _RegisterState extends State<Register> {
     setState(() {
       _loading = false;
     });
+    Navigator.of(context).pop();
   }
 
   @override
@@ -42,6 +43,7 @@ class _RegisterState extends State<Register> {
     double w = MediaQuery.of(context).size.width;
     return Scaffold(
         appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
           title: const Text(
             'Register Page',
             style: TextStyle(
