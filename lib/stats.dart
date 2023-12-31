@@ -33,6 +33,8 @@ class _StatsState extends State<Stats> {
   bool _loadChart = false;
   bool _loadbargraph = false;
   bool _loadlinegraph = false;
+  String username = '';
+  bool filterVisibility = false;
 
   void saveData(double w, double l) {
     setState(() {
@@ -42,19 +44,21 @@ class _StatsState extends State<Stats> {
       _loadChart = true;
     });
   }
-  void refreshPage(){
+
+  void refreshPage() {
     setState(() {
-       wins = 0;
-       loses = 0;
-       _loadPage = false;
-       _loadChart = false;
-       _loadbargraph = false;
-       _loadlinegraph = false;
-       pieChartData(displayStatus, saveData, filter);
-       barGraphData(displayStatus, update);
-       lineGraph(displayStatus, updateLine, filter);
+      wins = 0;
+      loses = 0;
+      _loadPage = false;
+      _loadChart = false;
+      _loadbargraph = false;
+      _loadlinegraph = false;
+      pieChartData(displayStatus, saveData, filter);
+      barGraphData(displayStatus, update);
+      lineGraph(displayStatus, updateLine, filter);
     });
   }
+
   void resetDataPopup() {
     showDialog(
         context: context,
@@ -75,8 +79,8 @@ class _StatsState extends State<Stats> {
                     style: TextStyle(color: Colors.white),
                   )),
               ElevatedButton(
-                onPressed: (){
-                  dataReset(displayStatus,refreshPage);
+                onPressed: () {
+                  dataReset(displayStatus, refreshPage);
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -104,16 +108,24 @@ class _StatsState extends State<Stats> {
     });
   }
 
+  void updateName(String name) {
+    setState(() {
+      username = 'Welcome, $name!';
+    });
+  }
+
   @override
   void initState() {
     pieChartData(displayStatus, saveData, filter);
     barGraphData(displayStatus, update);
     lineGraph(displayStatus, updateLine, filter);
+    getUsername(updateName, displayStatus);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    double w = MediaQuery.of(context).size.width;
     return Scaffold(
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Colors.white),
@@ -127,6 +139,18 @@ class _StatsState extends State<Stats> {
           ),
           centerTitle: true,
           backgroundColor: Colors.black,
+          actions: [
+            IconButton(onPressed: (){
+              setState(() {
+                if(filterVisibility){
+                  filterVisibility = false;
+                }else{
+                  filterVisibility = true;
+                }
+
+              });
+            }, icon: const Icon(Icons.filter_alt)),
+          ],
         ),
         body: !_loadPage
             ? const Center(
@@ -139,10 +163,21 @@ class _StatsState extends State<Stats> {
             : SingleChildScrollView(
                 child: Center(
                 child: Column(children: [
-                  const Text(
-                    'Choose a filter:',
-                    style: TextStyle(fontSize: 24),
+                  const SizedBox(
+                    height: 20,
                   ),
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      color: Colors.green,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Visibility(visible: filterVisibility ,child:
                   DropdownMenu(
                     dropdownMenuEntries:
                         filters.map<DropdownMenuEntry<String>>((String text) {
@@ -158,14 +193,28 @@ class _StatsState extends State<Stats> {
                         lineGraph(displayStatus, updateLine, filter);
                       });
                     },
-                  ),
+                  )),
                   const SizedBox(
                     height: 20,
                   ),
-                  const Text(
-                    'WIN/LOSS:',
-                    style: TextStyle(fontSize: 24),
-                  ),
+                  Container(
+                    width: w *0.8,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: const RadialGradient(
+                            radius: 3,
+                            colors: [
+                              Colors.lime,
+                              Colors.green,
+                              Colors.black,
+                            ]
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: const Center(child: Text(
+                    'WIN/LOSS',
+                    style: TextStyle(fontSize: 24,color: Colors.white, fontWeight: FontWeight.bold,letterSpacing: 2,),
+                  ))),
                   !_loadChart
                       ? const Center(
                           child: SizedBox(
@@ -221,11 +270,26 @@ class _StatsState extends State<Stats> {
                   const SizedBox(
                     height: 10,
                   ),
-                  const Text(
-                    'Time History',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                !_loadlinegraph
+                  Container(
+                      width: w *0.8,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: const RadialGradient(
+                            radius: 3,
+                            colors: [
+                              Colors.lime,
+                              Colors.green,
+                              Colors.black,
+                            ]
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: const Center(child: Text(
+                        'Time History',
+                        style: TextStyle(fontSize: 24,color: Colors.white, fontWeight: FontWeight.bold,letterSpacing: 2,),
+                      ))),
+                  const SizedBox(height: 40,),
+                  !_loadlinegraph
                       ? const Center(
                           child: SizedBox(
                             width: 120,
@@ -269,11 +333,25 @@ class _StatsState extends State<Stats> {
                   const SizedBox(
                     height: 30,
                   ),
-
-                  const Text(
-                    'GAMES/DAY:',
-                    style: TextStyle(fontSize: 24),
-                  ),
+                  Container(
+                      width: w *0.8,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: const RadialGradient(
+                            radius: 3,
+                            colors: [
+                              Colors.lime,
+                              Colors.green,
+                              Colors.black,
+                            ]
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: const Center(child: Text(
+                        'GAMES/DAY',
+                        style: TextStyle(fontSize: 24,color: Colors.white, fontWeight: FontWeight.bold,letterSpacing: 2,),
+                      ))),
+                  const SizedBox(height: 40,),
                   !_loadbargraph
                       ? const Center(
                           child: SizedBox(
@@ -345,8 +423,6 @@ class _StatsState extends State<Stats> {
                                   barGraphList[6]
                                 ]),
                           )),
-
-
                   const SizedBox(height: 15),
                   ElevatedButton(
                       onPressed: resetDataPopup,
@@ -356,7 +432,9 @@ class _StatsState extends State<Stats> {
                         'Reset Data',
                         style: TextStyle(color: Colors.white),
                       )),
-                  const SizedBox(height: 20,),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -373,6 +451,27 @@ class _StatsState extends State<Stats> {
                   const SizedBox(height: 10)
                 ]),
               )));
+  }
+}
+
+void getUsername(Function(String name) updateName,
+    Function(String text) displayStatus) async {
+  try {
+    String userID = await _encryptedData.getString('myKey');
+    final response = await http
+        .post(Uri.parse('$_baseURL/mobile/getUsername.php'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8'
+            },
+            body: convert.jsonEncode(<String, String>{'uid': userID}))
+        .timeout(const Duration(seconds: 5));
+    if (response.statusCode == 200) {
+      final jsonResponse = convert.jsonDecode(response.body);
+      var row = jsonResponse[0];
+      updateName(row['username']);
+    }
+  } catch (e) {
+    displayStatus('Failed to set username');
   }
 }
 
@@ -409,7 +508,7 @@ void barGraphData(Function(String message) displayStatus,
             },
             body: convert.jsonEncode(<String, String>{'uid': userID}))
         .timeout(const Duration(seconds: 5));
-   if (response.statusCode == 200) {
+    if (response.statusCode == 200) {
       final jsonResponse = convert.jsonDecode(response.body);
       barGraphList.clear();
       for (var row in jsonResponse) {
@@ -427,13 +526,13 @@ void barGraphData(Function(String message) displayStatus,
         }
       }
       update(true);
-
     }
   } catch (e) {
     update(false);
     displayStatus('Error retrieving data');
   }
 }
+
 void lineGraph(Function(String message) displayStatus,
     Function(bool success) updateLine, String operation) async {
   try {
@@ -463,15 +562,17 @@ void lineGraph(Function(String message) displayStatus,
     displayStatus('Error retrieving data');
   }
 }
-void dataReset(Function(String message) displayStatus,Function() refreshPage) async {
+
+void dataReset(
+    Function(String message) displayStatus, Function() refreshPage) async {
   try {
     String userID = await _encryptedData.getString('myKey');
     final response = await http
         .post(Uri.parse('$_baseURL/mobile/dataReset.php'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8'
-        },
-        body: convert.jsonEncode(<String, String>{'uid': userID}))
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8'
+            },
+            body: convert.jsonEncode(<String, String>{'uid': userID}))
         .timeout(const Duration(seconds: 5));
     if (response.statusCode == 200) {
       displayStatus(response.body);

@@ -43,16 +43,16 @@ class ShowScore extends StatelessWidget {
                         IconButton(onPressed: (){
                             Navigator.of(context).pop();
                             Navigator.of(context).pop();
-                        }, icon: const Icon(Icons.home,size: 55,)),
+                        }, icon: const Icon(Icons.home,size: 55,color: Colors.white,)),
                         const SizedBox(width: 210,),
                         IconButton(onPressed: (){
                           Navigator.of(context).pop();
-                        }, icon: const Icon(Icons.refresh_rounded,size: 55,)),
+                        }, icon: const Icon(Icons.refresh_rounded,size: 55,color: Colors.white)),
                       ],
                     ),
-                    const SizedBox(height: 180,),
+                    const SizedBox(height: 140,),
                     const Text('You used',style:TextStyle(fontSize: 30, color: Colors.white)),
-                    Text(displayTime(), style: const TextStyle(fontSize: 110, color: Colors.white),),
+                    Text(displayTime(), style: const TextStyle(fontSize: 90, color: Colors.white),),
                     const Text('and',style:TextStyle(fontSize: 30, color: Colors.white)),
                     Text('${3 - score.livesRemaining}',style: const TextStyle(fontSize: 110, color: Colors.white)),
                     const Text('Hearts',style:TextStyle(fontSize: 30, color: Colors.white)),
