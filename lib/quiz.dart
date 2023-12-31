@@ -198,12 +198,6 @@ class _MyQuizState extends State<MyQuiz> {
         title: Text('MyQuiz - $header', style: const TextStyle(color: Colors.white),),
         centerTitle: true,
         backgroundColor: colors,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          ),
-        ),
-        elevation: 10,
       ),
       body: Center(
         child: Column(

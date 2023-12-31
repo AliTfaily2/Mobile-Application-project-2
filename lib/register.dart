@@ -52,12 +52,6 @@ class _RegisterState extends State<Register> {
           ),
           centerTitle: true,
           backgroundColor: Colors.green[900],
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(20),
-            ),
-          ),
-          elevation: 10,
         ),
         body: SingleChildScrollView(
             child: Center(
